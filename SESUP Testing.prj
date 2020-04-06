@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="530811194" file="C:\Users\H172361\Documents\MATLAB\CTU\SESUP\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\CTU\SESUP" name="SESUP Testing" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3261051428" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
     <param.appname>SESUP Testing</param.appname>
     <param.authnamewatermark>Jaroslav Tabacek</param.authnamewatermark>
     <param.email>tabacjar@fel.cvut.cz</param.email>
@@ -55,7 +55,7 @@ Requirements
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
-      <file location="C:\Users\H172361\Documents\MATLAB\CTU" name="SESUP" optional="false">C:\Users\H172361\Documents\MATLAB\CTU\SESUP</file>
+      <file location="C:\Users\H172361\Documents\MATLAB\JPRO" name="sesup" optional="false">C:\Users\H172361\Documents\MATLAB\JPRO\sesup</file>
     </build-deliverables>
     <workflow />
     <matlab>
