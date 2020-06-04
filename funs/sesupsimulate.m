@@ -40,7 +40,7 @@ nf = app.nf;
 FilterName = app.KfTab.FilterName;
 Par = app.KfTab.Par;
 
-% Additional nosie parameters for TDKF
+% Additional nosie parameters for XDKF
 Rss = R*10;
 Rys = R;
 
@@ -142,16 +142,16 @@ for thi = 1:numel(app.ParReal)
                         % SDKF
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),S_sdkf(:,:,kfi)] ...
                             = sdkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),S_sdkf(:,:,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
-                    case "TDKF"
-                        % RES-KF
+                    case "XDKF"
+                        % XDKF
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kr_xdkf(:,:,:,k,kfi)] ...
                             = xdkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,Rss,Rys,KfPar);
-                    case "TDKF-S1"
-                        % RES-KF-S1
+                    case "XDKF-S1"
+                        % XDKF-S1
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kr_xdkf(:,:,:,k,kfi)] ...
                             = xdkf1step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,Rss,Rys,KfPar);
-                    case "TDKF-S2"
-                        % RES-KF-S2
+                    case "XDKF-S2"
+                        % XDKF-S2
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kr_xdkf(:,:,:,k,kfi)] ...
                             = xdkf2step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,Rss,Rys,KfPar);
                     case "Hinf"
