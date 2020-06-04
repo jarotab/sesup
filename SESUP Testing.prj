@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="3261051428" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="732107514" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
     <param.appname>SESUP Testing</param.appname>
     <param.authnamewatermark>Jaroslav Tabacek</param.authnamewatermark>
     <param.email>tabacjar@fel.cvut.cz</param.email>
@@ -18,7 +18,7 @@ Requirements
 &lt;ul&gt;&lt;li&gt;Parallel Computing Toolbox&lt;/li&gt;&lt;/ul&gt;
 &lt;ul&gt;&lt;li&gt;Symbolic Math Toolbox (only for DKF algorithm)&lt;/li&gt;&lt;/ul&gt;</param.description>
     <param.screenshot />
-    <param.version>1.1</param.version>
+    <param.version>1.2</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Parallel Computing Toolbox</item>
