@@ -41,8 +41,8 @@ FilterName = app.KfTab.FilterName;
 Par = app.KfTab.Par;
 
 % Additional nosie parameters for XDKF
-Rss = R*10;
-Rys = R;
+Rss = R*10*0;
+Rys = R*0;
 
 for thi = 1:numel(app.ParReal)
     
@@ -93,7 +93,7 @@ for thi = 1:numel(app.ParReal)
     tic
     parfor n = 1:app.ExpNum
 %     for n = 1:app.ExpNum
-        % Intialize data matrices/vectors
+%         Intialize data matrices/vectors
         x_est    = x_est_init;
         P_est    = P_est_init;
         Kx       = Kx_init;

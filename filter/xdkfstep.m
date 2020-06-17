@@ -3,7 +3,7 @@ function [x,Px,K,Ps,Psx,Kr] = xdkfstep(x0,th0,P0x,P0s,P0sx,t,u,y,R,Q,Rss,Rys,gam
 % RES-KF algorithm
 
 if numel(th0) > 1
-    error('RES-KF cannot be used for systems with more than 1 parameter.')
+    error('XDKF cannot be used for systems with more than 1 parameter.')
 end
 
 nth = 1;
@@ -27,15 +27,13 @@ Ath = reshape(Ath_col(:,1),nx,nx);
 C = full(genmod('dgdx',t,x0,u,th0,e));
 
 % Additional noise 
-V = Rss;
-S = Rys;
+V = Rss*0;
+S = Rys*0;
 
 % Optimal gain
 th_init = th0-1;
-ode_th0 = th_init;
-ode_A0  = full(genmod('dfddx',t,x0,u,ode_th0,w));
-ode_C0 = full(genmod('dgdx',t,x0,u,ode_th0,e));
-ode_K0 = ode_A0*P0x*ode_C0'/(ode_C0*P0x*ode_C0'+R);
+% [~,~,ode_K0] = kfstep(x0,th_init,P0x,t,u,y,R,Q);
+[~,~,ode_K0,~,~,~] = xdkf1step(x0,th_init,P0x,P0s,P0sx,t,u,y,R,Q,Rss,Rys,gamma);
 ode_K0 = reshape(ode_K0,nx*ny,1);
 dK_odefun = @(th,K) K_xdkf_ode(th,K,x0,P0x,P0s(:,:,1),P0sx(:,:,1),t,u,y,R,gamma); % define ode
 % dK_odefun = @(th,K) K_xdkf_ode_2(th,K,P0x,P0s(:,:,1),P0sx(:,:,1),A,Ath,C,R,gamma); % define ode

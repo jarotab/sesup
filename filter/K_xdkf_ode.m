@@ -1,6 +1,6 @@
 function dK = K_xdkf_ode(th,K,x,Px,Ps,Psx,t,u,y,R,gamma)
 
-% RES-KF algorithm
+% XDKF algorithm
 
 nx = size(x,1);
 ny = size(y,1);
