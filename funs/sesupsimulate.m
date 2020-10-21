@@ -1,9 +1,11 @@
-function [mse_est,rmse_est,x_mu,x_est_mu,Kx_mu,Px_mu,Kth_mu,Ps_mu,Psx_mu] = sesupsimulate(app)
+function [mse_est,rmse_est,mad_est,x_mu,x_est_mu,Kx_mu,Px_mu,Kth_mu,s_est_mu,Ps_mu,Psx_mu] = sesupsimulate(app)
 
 mse_est  = app.mse_est;
 rmse_est = app.rmse_est;
+mad_est  = app.mad_est;
 x_mu     = app.x_mu;
 x_est_mu = app.x_est_mu;
+s_est_mu = app.s_est_mu;
 Kx_mu    = app.Kx_mu;
 Kth_mu   = app.Kth_mu;
 Px_mu    = app.Px_mu;
@@ -40,16 +42,14 @@ nf = app.nf;
 FilterName = app.KfTab.FilterName;
 Par = app.KfTab.Par;
 
-% Additional nosie parameters for XDKF
-Rss = R*10*0;
-Rys = R*0;
-
 for thi = 1:numel(app.ParReal)
     
-    tmp_mse_est = mse_est(:,:,:,thi);
-    tmp_rmse_est = rmse_est(:,:,:,thi);
+    tmp_mse = mse_est(:,:,:,thi);
+    tmp_rmse = rmse_est(:,:,:,thi);
+    tmp_mad = mad_est(:,:,:,thi);
     tmp_x_mu = x_mu(:,:,thi);
     tmp_x_est_mu = x_est_mu(:,:,:,thi);
+    tmp_s_est_mu = s_est_mu(:,:,:,:,thi);
     tmp_Kx_mu = Kx_mu(:,:,:,:,thi);
     tmp_Kth_mu = Kth_mu(:,:,:,:,thi);
     tmp_Px_mu = Px_mu(:,:,:,:,thi);
@@ -84,11 +84,10 @@ for thi = 1:numel(app.ParReal)
             Pz_skf_init(:,:,d) =  blkdiag(P_est_init(:,:,1,1),diag(Par(d)));
         end
     end
-    Ps_xdkf_init  = repmat(P0,1,1,nth,nt,nf);
-    Psx_xdkf_init = repmat(P0,1,1,nth,nt,nf);
-    s_dkf_init = zeros(nx,nth,nf);
-    S_sdkf_init = zeros(nx,nth,nf);    
-    Kr_xdkf_init = zeros(nx,ny,nth,nt,nf);
+    Ps_xdkf_init  = repmat(eye(nx),1,1,nth,nt,nf);
+    Psx_xdkf_init = repmat(eye(nx),1,1,nth,nt,nf);
+    s_est_init = zeros(nx,nth,nt,nf);
+    Kth_xdkf_init = zeros(nx,ny,nth,nt,nf);
     
     tic
     parfor n = 1:app.ExpNum
@@ -96,6 +95,7 @@ for thi = 1:numel(app.ParReal)
 %         Intialize data matrices/vectors
         x_est    = x_est_init;
         P_est    = P_est_init;
+        s_est    = s_est_init;
         Kx       = Kx_init;
         y        = y_init;
         x        = x_init;
@@ -104,9 +104,7 @@ for thi = 1:numel(app.ParReal)
         Pz_skf   = Pz_skf_init;
         Ps_xdkf  = Ps_xdkf_init;
         Psx_xdkf = Psx_xdkf_init;
-        Kr_xdkf  = Kr_xdkf_init; 
-        s_dkf    = s_dkf_init;
-        S_sdkf   = S_sdkf_init;
+        Kth_xdkf  = Kth_xdkf_init; 
         
         % Simulate experiment
         for k = 1:nt
@@ -121,6 +119,7 @@ for thi = 1:numel(app.ParReal)
             TmpPx = P_est(:,:,k,:);
             TmpPs = Ps_xdkf(:,:,:,k,:);
             TmpPsx = Psx_xdkf(:,:,:,k,:);
+            Tmps = s_est(:,:,k,:);
             for kfi = 1:nf
                 KfPar = Par(kfi);
                 switch FilterName(kfi)
@@ -136,24 +135,28 @@ for thi = 1:numel(app.ParReal)
                             = skfstep(Tmpx(:,:,1,kfi),th0,Pz_skf(:,:,kfi),k,u(:,k),y(:,:,k),R,Q);
                     case "DKF"
                         % DKF
-                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),s_dkf(:,:,kfi)] ...
-                            = dkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),s_dkf(:,:,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar,Ks);
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi)] ...
+                            = dkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar,Ks);
                     case "SDKF"
                         % SDKF
-                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),S_sdkf(:,:,kfi)] ...
-                            = sdkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),S_sdkf(:,:,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi)] ...
+                            = sdkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
                     case "XDKF"
                         % XDKF
-                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kr_xdkf(:,:,:,k,kfi)] ...
-                            = xdkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,Rss,Rys,KfPar);
-                    case "XDKF-S1"
-                        % XDKF-S1
-                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kr_xdkf(:,:,:,k,kfi)] ...
-                            = xdkf1step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,Rss,Rys,KfPar);
-                    case "XDKF-S2"
-                        % XDKF-S2
-                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kr_xdkf(:,:,:,k,kfi)] ...
-                            = xdkf2step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,Rss,Rys,KfPar);
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
+                            = xdkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                    case "XDKF-Z"
+                        % XDKF-Z
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
+                            = xdkf1step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                    case "XDKF-I"
+                        % XDKF-I
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
+                            = xdkf2step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                    case "XDKF-S"
+                        % XDKF-S
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
+                            = xdkf1step_ss(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);    
                     case "Hinf"
                         % Hinf (TmpPx := M_est)
                         if k < 2
@@ -169,6 +172,7 @@ for thi = 1:numel(app.ParReal)
             P_est(:,:,k+1,:)  = TmpPx;
             Ps_xdkf(:,:,:,k+1,:)  = TmpPs;
             Psx_xdkf(:,:,:,k+1,:)  = TmpPsx;
+            s_est(:,:,k+1,:) = Tmps;
             end
             
         end
@@ -177,25 +181,30 @@ for thi = 1:numel(app.ParReal)
         x_est = reshape(x_est,nx,nt,nf);
         
         % RMSE Sum
-        tmp_mse_est   = tmp_mse_est + cumsum((x-x_est).^2,2)./(t+1);        
+        tmp_mse   = tmp_mse + cumsum((x-x_est).^2,2)./(t+1);        
         % RMSE Sum
-        tmp_rmse_est  = tmp_rmse_est + sqrt(cumsum((x-x_est).^2,2)./(t+1));        
+        tmp_rmse  = tmp_rmse + sqrt(cumsum((x-x_est).^2,2)./(t+1));   
+        % MAD Sum
+        tmp_mad  = tmp_mad + repmat(mad(x-x_est,1,2),1,nt,1);   
         % est Sum
         tmp_x_mu      = tmp_x_mu + x;
         tmp_x_est_mu  = tmp_x_est_mu + x_est;
+        tmp_s_est_mu  = tmp_s_est_mu + s_est;
         tmp_Kx_mu     = tmp_Kx_mu + Kx;
         tmp_Px_mu     = tmp_Px_mu + P_est;
-        tmp_Kth_mu    = tmp_Kth_mu + reshape(Kr_xdkf(:,:,1,:,:),nx,ny,nt,nf);
+        tmp_Kth_mu    = tmp_Kth_mu + reshape(Kth_xdkf(:,:,1,:,:),nx,ny,nt,nf);
         tmp_Ps_mu     = tmp_Ps_mu + reshape(Ps_xdkf(:,:,1,:,:),nx,nx,nt,nf);
         tmp_Psx_mu    = tmp_Psx_mu + reshape(Psx_xdkf(:,:,1,:,:),nx,nx,nt,nf);
         
     end
     
     % Mean in experiments
-    mse_est(:,:,:,thi)  = tmp_mse_est(:,:,:)/app.ExpNum;
-    rmse_est(:,:,:,thi) = tmp_rmse_est(:,:,:)/app.ExpNum;
+    mse_est(:,:,:,thi)  = tmp_mse(:,:,:)/app.ExpNum;
+    rmse_est(:,:,:,thi) = tmp_rmse(:,:,:)/app.ExpNum;
+    mad_est(:,:,:,thi)  = tmp_mad(:,:,:)/app.ExpNum;
     x_mu(:,:,thi)       = tmp_x_mu(:,:)/app.ExpNum;
     x_est_mu(:,:,:,thi) = tmp_x_est_mu(:,:,:)/app.ExpNum;
+    s_est_mu(:,:,:,:,thi) = tmp_s_est_mu(:,:,:,:)/app.ExpNum;
     Kx_mu(:,:,:,:,thi)  = tmp_Kx_mu(:,:,:,:)/app.ExpNum;
     Px_mu(:,:,:,:,thi)  = tmp_Px_mu(:,:,:,:)/app.ExpNum;
     Kth_mu(:,:,:,:,thi)  = tmp_Kth_mu(:,:,:,:)/app.ExpNum;

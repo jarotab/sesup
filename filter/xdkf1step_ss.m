@@ -1,7 +1,8 @@
-function [x,Px,K,s,Ps,Psx,Kth] = xdkf1step(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
+function [x,Px,K,s,Ps,Psx,Kth] = xdkf1step_ss(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
 
 % XDKF 
 % - with assumption of zero gain sensitivity 
+% - steady-state gain
 
 % System dimensions
 nth = size(th0,1);
@@ -30,12 +31,18 @@ C = full(genmod('dgdx',t,x0,u,th0,e));
 alpha = 1-sum(gamma);
 
 % Optimal gain
-Psum = alpha*P0x;
+% DARE config
+drR = alpha*R;
+drQ = alpha*Q;
 for p = 1:nth
-    Psum = Psum + gamma(p)*P0s(:,:,p);
+    Athp = reshape(Ath_col(:,p),nx,nx);
+    drQ = drQ + gamma(p)*(Athp*x0)*(Athp*x0)';
 end
-K = (A*Psum*C')/(C*Psum*C' + alpha*R);
-
+drB = C';
+drA = A';
+[~,drK,~] = idare(drA,drB,drQ,drR,[],[]);
+K = drK';
+            
 % Update state and error covariance
 x = full(genmod('fd',t,x0,u,th0,w)) + K*(y-C*x0);
 Px = (A-K*C)*P0x*(A-K*C)' + Q + K*R*K';
@@ -45,8 +52,7 @@ Kth = zeros(nx,ny,nth);
 Ps = P0s;
 Psx = P0sx;
 for p = 1:nth
-    Athp = reshape(Ath_col(:,p),nx,nx);
-    P0sp  = P0s(:,:,p);    
+    P0sp  = P0s(:,:,p);
     P0sxp = P0sx(:,:,p);
     Psx(:,:,p) = (A-K*C)*P0sxp*(A-K*C)';
     Ps(:,:,p) = (A-K*C)*P0sp*(A-K*C)' + (Athp*x0)*(Athp*x0)';

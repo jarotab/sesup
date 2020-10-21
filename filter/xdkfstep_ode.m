@@ -1,4 +1,4 @@
-function [x,Px,K,Ps,Psx,Kr] = xdkfstep(x0,th0,P0x,P0s,P0sx,t,u,y,R,Q,Rss,Rys,gamma)
+function [x,Px,K,Ps,Psx,Kr] = xdkfstep_ode(x0,th0,P0x,P0s,P0sx,t,u,y,R,Q,Rss,Rys,gamma)
 
 % RES-KF algorithm
 

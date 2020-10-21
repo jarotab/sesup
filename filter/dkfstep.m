@@ -20,7 +20,6 @@ C = full(genmod('dgdx',t,x0,u,th0,e));
 % Data step
 
 S = C*P0*C' + R;
-% Ks = sym('k',[nx,nx]);
 SumL = Ks*0;
 SumR = Ks*0;
 for i = 1:nth

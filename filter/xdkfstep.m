@@ -1,7 +1,7 @@
-function [x,Px,K,s,Ps,Psx,Kth] = xdkf1step(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
+function [x,Px,K,s,Ps,Psx,Kth] = xdkfstep2(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
 
-% XDKF 
-% - with assumption of zero gain sensitivity 
+% XDKF
+% - optimal
 
 % System dimensions
 nth = size(th0,1);
@@ -30,33 +30,43 @@ C = full(genmod('dgdx',t,x0,u,th0,e));
 alpha = 1-sum(gamma);
 
 % Optimal gain
+Kth = zeros(nx,ny,nth);
+Kthy = zeros(nx,ny);
 Psum = alpha*P0x;
 for p = 1:nth
     Psum = Psum + gamma(p)*P0s(:,:,p);
 end
-K = (A*Psum*C')/(C*Psum*C' + alpha*R);
+for p = 1:nth
+    Athp = reshape(Ath_col(:,p),nx,nx);
+    Kth(:,:,p) = Athp*Psum*C'/(C*Psum*C'+alpha*R);
+    Kthy = Kthy - gamma(p)*Kth(:,:,p)*C*P0sx(:,:,p)'*C';
+end
+K = (A*Psum*C' + Kthy)/(C*Psum*C' + alpha*R);
 
 % Update state and error covariance
 x = full(genmod('fd',t,x0,u,th0,w)) + K*(y-C*x0);
 Px = (A-K*C)*P0x*(A-K*C)' + Q + K*R*K';
 
 % Update error sensitivity covariance
-Kth = zeros(nx,ny,nth);
 Ps = P0s;
 Psx = P0sx;
 for p = 1:nth
     Athp = reshape(Ath_col(:,p),nx,nx);
-    P0sp  = P0s(:,:,p);    
+    P0sp  = P0s(:,:,p);
     P0sxp = P0sx(:,:,p);
-    Psx(:,:,p) = (A-K*C)*P0sxp*(A-K*C)';
-    Ps(:,:,p) = (A-K*C)*P0sp*(A-K*C)' + (Athp*x0)*(Athp*x0)';
+    P0xsp = P0sxp';
+    Psx(:,:,1) = (-Kth(:,:,p)*C)*P0x*(A-K*C)' + (A-K*C)*P0sxp*(A-K*C)' + Kth*R*K';
+    Ps(:,:,1) = (-Kth(:,:,p)*C)*P0x*(-Kth(:,:,p)*C)' + (-Kth*C)*P0xsp*(A-K*C)' ...
+        + (A-K*C)*P0sxp*(-Kth(:,:,p)*C)' + (A-K*C)*P0sp*(A-K*C)' ...
+        + Kth(:,:,p)*R*Kth(:,:,p)' ...
+        + Athp*x0*(Athp*x0)';
 end
 
 % Sensitivity update -- for analysis purpose only
 s = s0;
 for p = 1:nth
     Athp = reshape(Ath_col(:,p),nx,nx);
-    s(:,p) = (A-K*C)*s0(:,p) - Athp*x0;
+    s(:,p) = (A-K*C)*s0(:,p) - Kth(:,:,p)*(y-C*x0) - Athp*x0;
 end
 
 end
