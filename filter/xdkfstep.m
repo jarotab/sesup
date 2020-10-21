@@ -1,4 +1,4 @@
-function [x,Px,K,s,Ps,Psx,Kth] = xdkfstep2(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
+function [x,Px,K,s,Ps,Psx,Kth] = xdkfstep(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
 
 % XDKF
 % - optimal
