@@ -185,7 +185,11 @@ for thi = 1:numel(app.ParReal)
         % RMSE Sum
         tmp_rmse  = tmp_rmse + sqrt(cumsum((x-x_est).^2,2)./(t+1));   
         % MAD Sum
-        tmp_mad  = tmp_mad + repmat(mad(x-x_est,1,2),1,nt,1);   
+        mad_i = zeros(nx,nt,nf);
+        for madi = 1:nt
+            mad_i(:,madi,:) = median(abs(x_est(:,1:madi,:)-median(x_est(:,1:madi,:),2)),2);
+        end
+        tmp_mad  = tmp_mad + mad_i;   
         % est Sum
         tmp_x_mu      = tmp_x_mu + x;
         tmp_x_est_mu  = tmp_x_est_mu + x_est;

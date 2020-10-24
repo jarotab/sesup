@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="3129139564" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="557883482" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
     <param.appname>SESUP Testing</param.appname>
     <param.authnamewatermark>Jaroslav Tabacek</param.authnamewatermark>
     <param.email>tabacjar@fel.cvut.cz</param.email>
@@ -18,7 +18,9 @@ Requirements for running simulations
 &lt;ul&gt;&lt;li&gt;MATLAB Support for MinGW-w64 C/C++ Compiler &lt;/li&gt;&lt;/ul&gt;
 &lt;ul&gt;&lt;li&gt;Parallel Computing Toolbox (Optional)&lt;/li&gt;&lt;/ul&gt;
 
-Tested with MATLAB R2019b Update 6 and Casadi v3.5.5</param.description>
+Created with MATLAB R2019b Update 6 and Casadi v3.5.5. 
+Also works on R2020a, R2020b and older Casadi versions. 
+App might not work correctly for later versions of MATLAB due to regular behaviour changes in MATLAB App Designer.</param.description>
     <param.screenshot>${PROJECT_ROOT}\screenshot.png</param.screenshot>
     <param.version>1.3</param.version>
     <param.products.name>

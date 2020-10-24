@@ -127,6 +127,13 @@ switch Type
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("MSE ",yUnit));
+    case 'MAD'
+        for i = 1:numel(validKfId)
+            plot(ax,t_s,mad_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+        end
+        legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
+        xlabel(ax,tLabel)
+        ylabel(ax,strcat("MAD ",yUnit));
     case 'RMSE'
         for i = 1:numel(validKfId)
             plot(ax,t_s,rmse_s(xn(1),:,validKfId(i),thn),plot_opt{:})
