@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="1031741318" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP" preferred-package-location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="3986085537" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP" preferred-package-location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>SESUP</param.appname>
     <param.icon>${PROJECT_ROOT}\SESUP_resources\icon.ico</param.icon>
     <param.icons>
@@ -36,8 +36,8 @@
     <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
     <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
     <param.windows.command.prompt>true</param.windows.command.prompt>
-    <param.create.log>false</param.create.log>
-    <param.log.file />
+    <param.create.log>true</param.create.log>
+    <param.log.file>sesup</param.log.file>
     <param.native.matlab>false</param.native.matlab>
     <param.checkbox>false</param.checkbox>
     <param.example />
@@ -69,8 +69,6 @@
       <param.package.mcr.name />
       <param.no.mcr.name />
       <param.windows.command.prompt />
-      <param.create.log />
-      <param.log.file />
       <param.native.matlab />
       <param.checkbox />
       <param.example />

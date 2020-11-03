@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="557883482" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="1445159099" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
     <param.appname>SESUP Testing</param.appname>
     <param.authnamewatermark>Jaroslav Tabacek</param.authnamewatermark>
     <param.email>tabacjar@fel.cvut.cz</param.email>
@@ -15,11 +15,12 @@
 
 Requirements for running simulations
 &lt;ul&gt;&lt;li&gt;Casadi &lt;/li&gt;&lt;/ul&gt;
-&lt;ul&gt;&lt;li&gt;MATLAB Support for MinGW-w64 C/C++ Compiler &lt;/li&gt;&lt;/ul&gt;
 &lt;ul&gt;&lt;li&gt;Parallel Computing Toolbox (Optional)&lt;/li&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;li&gt;MATLAB Support for MinGW-w64 C/C++ Compiler (Windows) &lt;/li&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;li&gt;GCC C/C++ Compiler (Linux) &lt;/li&gt;&lt;/ul&gt;
 
-Created with MATLAB R2019b Update 6 and Casadi v3.5.5. 
-Also works on R2020a, R2020b and older Casadi versions. 
+Created with MATLAB R2019b Update 6 and Casadi v3.5.5.
+Also works on R2020a, R2020b and older Casadi versions. (Windows or Linux)
 App might not work correctly for later versions of MATLAB due to regular behaviour changes in MATLAB App Designer.</param.description>
     <param.screenshot>${PROJECT_ROOT}\screenshot.png</param.screenshot>
     <param.version>1.3</param.version>
@@ -52,6 +53,8 @@ App might not work correctly for later versions of MATLAB due to regular behavio
       <file>${PROJECT_ROOT}\data</file>
       <file>${PROJECT_ROOT}\filter</file>
       <file>${PROJECT_ROOT}\funs</file>
+      <file>${PROJECT_ROOT}\genmod.mexa64</file>
+      <file>${PROJECT_ROOT}\genmod.mexw64</file>
       <file>${PROJECT_ROOT}\logo.jpg</file>
       <file>${PROJECT_ROOT}\model</file>
     </fileset.resources>
