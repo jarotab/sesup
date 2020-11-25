@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1445159099" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="1578459350" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
     <param.appname>SESUP Testing</param.appname>
     <param.authnamewatermark>Jaroslav Tabacek</param.authnamewatermark>
     <param.email>tabacjar@fel.cvut.cz</param.email>
@@ -15,6 +15,7 @@
 
 Requirements for running simulations
 &lt;ul&gt;&lt;li&gt;Casadi &lt;/li&gt;&lt;/ul&gt;
+&lt;ul&gt;&lt;li&gt;Symbolic Math Toolbox (Optional)&lt;/li&gt;&lt;/ul&gt;
 &lt;ul&gt;&lt;li&gt;Parallel Computing Toolbox (Optional)&lt;/li&gt;&lt;/ul&gt;
 &lt;ul&gt;&lt;li&gt;MATLAB Support for MinGW-w64 C/C++ Compiler (Windows) &lt;/li&gt;&lt;/ul&gt;
 &lt;ul&gt;&lt;li&gt;GCC C/C++ Compiler (Linux) &lt;/li&gt;&lt;/ul&gt;
@@ -27,14 +28,17 @@ App might not work correctly for later versions of MATLAB due to regular behavio
     <param.products.name>
       <item>MATLAB</item>
       <item>Parallel Computing Toolbox</item>
+      <item>Symbolic Math Toolbox</item>
     </param.products.name>
     <param.products.id>
       <item>1</item>
       <item>80</item>
+      <item>15</item>
     </param.products.id>
     <param.products.version>
       <item>9.7</item>
       <item>7.1</item>
+      <item>8.4</item>
     </param.products.version>
     <param.platforms />
     <param.output>${PROJECT_ROOT}</param.output>

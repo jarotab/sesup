@@ -146,14 +146,14 @@ switch Type
             plot(ax,app.ParReal,reshape(rmse_s(xn(1),end,validKfId(i),:),1,numel(app.ParReal)),'-o',plot_opt{:})
         end
         xlabel(ax,'Parameter Value')
-        ylabel(ax,'Total RMSE')
+        ylabel(ax,strcat("Total RMSE ",yUnit));
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
     case 'Final MAD'
         for i = 1:numel(validKfId)
             plot(ax,app.ParReal,reshape(mad_s(xn(1),end,validKfId(i),:),1,numel(app.ParReal)),'-o',plot_opt{:})
         end
         xlabel(ax,'Parameter Value')
-        ylabel(ax,'MAD')
+        ylabel(ax,strcat("MAD ",yUnit));
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
     case 'Final Norm (sensitivity)'
         for i = 1:numel(validKfId)
@@ -165,7 +165,7 @@ switch Type
             plot(ax,app.ParReal,norm_i,'-o',plot_opt{:})
         end
         xlabel(ax,'Parameter Value')
-        ylabel(ax,'Norm ')
+        ylabel(ax,strcat("Norm ",yUnit))
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
     case 'Final MAD Zero (sensitivity)'
         for i = 1:numel(validKfId)
