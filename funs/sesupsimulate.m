@@ -66,7 +66,7 @@ for thi = 1:numel(app.ParReal)
         ProgressDialog.Message = ShowText;
     end
     
-    % Intial variables   
+    % Initial variables   
     x_est_init = zeros(nx,1,nt,nf);
     P_est_init = zeros(nx,nx,nt,nf);
     Kx_init = zeros(nx,ny,nt,nf);
@@ -75,7 +75,7 @@ for thi = 1:numel(app.ParReal)
     u_init = app.u;
     x_init(:,:,1) = x0;
     for kfi = 1:nf
-        x_est_init(:,:,1,kfi) = x0;
+        x_est_init(:,:,1,kfi) = x0+1;
         P_est_init(:,:,1,kfi) = P0;
     end
     Pz_skf_init =  repmat(blkdiag(P_est_init(:,:,1,1),eye(nth)),1,1,nf);
@@ -84,8 +84,8 @@ for thi = 1:numel(app.ParReal)
             Pz_skf_init(:,:,d) =  blkdiag(P_est_init(:,:,1,1),diag(Par(d)));
         end
     end
-    Ps_xdkf_init  = repmat(eye(nx),1,1,nth,nt,nf);
-    Psx_xdkf_init = repmat(eye(nx),1,1,nth,nt,nf);
+    Ps_xdkf_init  = repmat(eye(nx)*0,1,1,nth,nt,nf);
+    Psx_xdkf_init = repmat(eye(nx)*0,1,1,nth,nt,nf);
     s_est_init = zeros(nx,nth,nt,nf);
     Kth_xdkf_init = zeros(nx,ny,nth,nt,nf);
     
@@ -145,10 +145,18 @@ for thi = 1:numel(app.ParReal)
                         % XDKF
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
                             = xdkfstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                    case "XDKF-N"
+                        % XDKF normalized
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
+                            = xdkfnstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
                     case "XDKF-Z"
                         % XDKF-Z
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
                             = xdkf1step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                    case "XDKF-ZN"
+                        % XDKF-Z normalized
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
+                            = xdkf1nstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
                     case "XDKF-I"
                         % XDKF-I
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...

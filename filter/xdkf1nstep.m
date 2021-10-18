@@ -1,7 +1,8 @@
-function [x,Px,K,s,Ps,Psx,Kth] = xdkf1step(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
+function [x,Px,K,s,Ps,Psx,Kth] = xdkf1nstep(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
 
-% XDKF 
+% XDKF-Z N
 % - with assumption of zero gain sensitivity 
+% - normalized objectives
 
 % System dimensions
 nth = size(th0,1);
@@ -28,16 +29,30 @@ C = full(genmod('dgdx',t,x0,u,th0,e));
 
 % weight
 alpha = 1-sum(gamma);
+if trace(P0s) > 0
+% weight normalization
+g_max = 0.99;
+K_g0 = (A*P0x*C')/(C*P0x*C' + R);
+[~,~,K_gmax] = xdkf1step(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,g_max);
+JxU = optimizationCriteria(K_g0,0,A,Ath_col,C,x0,th0,P0x,s0,P0s,P0sx,R,Q);
+JxN = optimizationCriteria(K_gmax,0,A,Ath_col,C,x0,th0,P0x,s0,P0s,P0sx,R,Q);
+JsU = optimizationCriteria(K_gmax,g_max,A,Ath_col,C,x0,th0,P0x,s0,P0s,P0sx,R,Q);
+JsN = optimizationCriteria(K_g0,g_max,A,Ath_col,C,x0,th0,P0x,s0,P0s,P0sx,R,Q);
+NormAlpha = 1/(JxN-JxU);
+NormGamma = 1/(JsN-JsU);
+alpha = alpha*NormAlpha+(1-g_max)*NormGamma;
+gamma = gamma*g_max*NormGamma;
+end
 
 % Optimal gain
 Psum = alpha*P0x;
-Ssum = zeros(nx,ny);
+Knum = zeros(nx,ny);
 for p = 1:nth
     Athp = reshape(Ath_col(:,p),nx,nx);
     Psum = Psum + gamma(p)*P0s(:,:,p);
-    Ssum = Ssum + gamma(p)*(Athp*x0)*s0(:,p)'*C';
+    Knum = Knum + gamma(p)*(Athp*x0)*s0(:,p)'*C';
 end
-K = (A*Psum*C' - Ssum )/(C*Psum*C' + alpha*R);
+K = (A*Psum*C' - Knum )/(C*Psum*C' + alpha*R);
 
 % Update state and error covariance
 x = full(genmod('fd',t,x0,u,th0,w)) + K*(y-C*x0);

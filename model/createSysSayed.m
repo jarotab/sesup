@@ -4,6 +4,7 @@ sys = struct;
 
 % Propagation equation
 sys.fd = @(t,x,u,th,w) [0.9802 0.0196+0.099*th(1); 0  0.9802]*x + eye(2)*w;
+% sys.fd = @(t,x,u,th,w) [0.9802-0.099*th(1) 0.0196+0.099*th(1); 0  0.9802]*x + eye(2)*w;
 
 % Measurement equation
 sys.g = @(t,x,u,th,e) [1 -1]*x + e;

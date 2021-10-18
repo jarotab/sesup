@@ -57,7 +57,8 @@ switch Type
     case 'Norm (sensitivity)'
         for i = 1:numel(validKfId)
             s_tmp = reshape(s_est_mu_s(:,1,:,validKfId(i),thn),app.nx,numel(t_s));
-            norm_s = sqrt(diag(s_tmp'*s_tmp));
+%             norm_s = sqrt(diag(s_tmp'*s_tmp));
+            norm_s = (diag(s_tmp'*s_tmp));
             plot(ax,t_s,norm_s,plot_opt{:})
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})

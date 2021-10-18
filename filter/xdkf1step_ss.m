@@ -34,13 +34,16 @@ alpha = 1-sum(gamma);
 % DARE config
 drR = alpha*R;
 drQ = alpha*Q;
+drS = zeros(nx,ny);
 for p = 1:nth
     Athp = reshape(Ath_col(:,p),nx,nx);
-    drQ = drQ + gamma(p)*(Athp*x0)*(Athp*x0)';
+    drS = drS - gamma(p)*(Athp*x0)*s0(:,p)'*C';
+    drQ = drQ + gamma(p)*((Athp*x0)*(Athp*x0)'...
+        - (Athp*x0)*s0(:,p)'*A' - A*s0(:,p)*(Athp*x0)');
 end
 drB = C';
 drA = A';
-[~,drK,~] = idare(drA,drB,drQ,drR,[],[]);
+[~,drK,~] = idare(drA,drB,drQ,drR,drS,[]);
 K = drK';
             
 % Update state and error covariance
