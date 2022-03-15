@@ -25,6 +25,8 @@ y = reshape(y,ny,1);
 A  = full(genmod('dfddx',t,x0,u,th0,w));
 Ath_col = full(genmod('ddfddxdth',t,x0,u,th0,w));
 C = full(genmod('dgdx',t,x0,u,th0,e));
+f = full(genmod('fd',t,x0,u,th0,w));
+g = full(genmod('g',t,x0,u,th0,e));
 
 % weight
 alpha = 1-sum(gamma);
@@ -40,7 +42,7 @@ end
 K = (A*Psum*C' - Ssum )/(C*Psum*C' + alpha*R);
 
 % Update state and error covariance
-x = full(genmod('fd',t,x0,u,th0,w)) + K*(y-C*x0);
+x = f + K*(y-g);
 Px = (A-K*C)*P0x*(A-K*C)' + Q + K*R*K';
 
 % Update error sensitivity covariance
@@ -62,31 +64,5 @@ for p = 1:nth
     Athp = reshape(Ath_col(:,p),nx,nx);
     s(:,p) = (A-K*C)*s0(:,p) - Athp*x0;
 end
-
-end
-
-function J = optimizationCriteria(K,gamma,A,Ath_col,C,x0,th0,P0x,s0,P0s,P0sx,R,Q)
-
-% System dimensions
-nth = size(th0,1);
-nx = size(x0,1);
-
-Px = (A-K*C)*P0x*(A-K*C)' + Q + K*R*K';
-
-Popt = (1-gamma)*Px;
-
-Ps = P0s;
-Psx = P0sx;
-for p = 1:nth
-    Athp = reshape(Ath_col(:,p),nx,nx);
-    P0sp  = P0s(:,:,p);    
-    P0sxp = P0sx(:,:,p);
-    Psx(:,:,p) = (A-K*C)*P0sxp*(A-K*C)';
-    Ps(:,:,p) = (A-K*C)*P0sp*(A-K*C)' + (Athp*x0)*(Athp*x0)'...
-        - (A-K*C)*s0(:,p)*(Athp*x0)' - (Athp*x0)*s0(:,p)'*(A-K*C)';
-    Popt = Popt + gamma(p)*Ps(:,:,p);
-end
-
-J = trace(Popt);
 
 end

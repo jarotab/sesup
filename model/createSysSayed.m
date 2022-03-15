@@ -28,6 +28,7 @@ opt.Q = [1.9608 0.0195;
      0.0195 1.9605];
 
 % Initial conditions
+opt.x0_sim = ones(2,1)*1;
 opt.x0 = ones(2,1)*0;
 opt.P0 = eye(2);
 opt.y0 = 0;

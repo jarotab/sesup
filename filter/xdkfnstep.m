@@ -1,4 +1,4 @@
-function [x,Px,K,s,Ps,Psx,Kth] = xdkfnstep(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
+function [x,Px,K,s,Ps,Psx,Kth] = xdkfnstep(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma,g_max)
 
 % XDKF-N
 % - optimal
@@ -31,7 +31,6 @@ C = full(genmod('dgdx',t,x0,u,th0,e));
 alpha = 1-sum(gamma);
 if trace(P0s) > 0
 % weight normalization
-g_max = 0.99;
 % K_g0 = (A*P0x*C' )/(C*P0x*C' + R);
 [~,~,K_g0,~,~,~,Kth_g0] = xdkfstep(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,0);
 [~,~,K_gmax,~,~,~,Kth_gmax] = xdkfstep(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,g_max);

@@ -16,6 +16,7 @@ w = zeros(nx,1);
 e = zeros(ny,1);
 
 C = full(genmod('dgdx',t,x0,u,th0,e));
+g = full(genmod('g',t,x0,u,th0,e));
 
 % Data step
 
@@ -23,15 +24,19 @@ S = C*P0*C' + R;
 SumL = Ks*0;
 SumR = Ks*0;
 for i = 1:nth
-    g = C*s0(:,i);
-    SumL = SumL + W(:,:,i)*Ks*g*g';
-    SumR = SumR +  W(:,:,i)*s0(:,i)*g';
+    gam = C*s0(:,i);
+    SumL = SumL + W(:,:,i)*Ks*gam*gam';
+    SumR = SumR +  W(:,:,i)*s0(:,i)*gam';
 end
 Ksv = reshape(Ks,1,nx*ny);
-Ksol = vpasolve(Ks*S + SumL == P0*C' + SumR,Ksv);
 Kvec = zeros(1,nx*ny);
-for i = 1:numel(Ksv)
-Kvec(i) = eval(Ksol.(char(Ksv(i))));
+try
+    Ksol = vpasolve(Ks*S + SumL == P0*C' + SumR,Ksv);
+    for i = 1:numel(Ksv)
+        Kvec(i) = eval(Ksol.(char(Ksv(i))));
+    end
+catch 
+    warning('DKF solution not found. Setting zero gain.')
 end
 K = reshape(Kvec,nx,ny);
 
@@ -39,7 +44,7 @@ s = s0*0;
 for i = 1:nth
     s(:,i) = (eye(nx) - K*C)*s0(:,i);
 end
-x = x0 + K*(y-C*x0);
+x = x0 + K*(y-g);
 P = (eye(nx)-K*C)*P0*(eye(nx)-K*C)' + K*R*K';
 
 % Time step

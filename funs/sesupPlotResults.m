@@ -20,7 +20,7 @@ if strcmp(YScale,'Log')
     s_est_mu_s = 10*log10(app.s_est_mu);
     rmse_s = 10*log10(app.rmse_est);
     mad_s = 10*log10(app.mad_est);
-    mse_s = 10*log10(app.mse_est);
+    irmse_s = 10*log10(app.irmse_est);
     Kx_mu_s     = 10*log10(app.Kx_mu);
     yUnit = "(dB)";
 else
@@ -29,7 +29,7 @@ else
     s_est_mu_s = app.s_est_mu;
     rmse_s = app.rmse_est;
     mad_s = app.mad_est;
-    mse_s = app.mse_est;
+    irmse_s = app.irmse_est;
     Kx_mu_s = app.Kx_mu;
     yUnit = "(-)";
 end
@@ -40,104 +40,205 @@ Kth_mu_s = app.Kth_mu;
 
 switch Type
     case 'State'
-        plot(ax,t_s,x_mu_s(xn(1),:,thn),plot_opt{:})
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,x_est_mu_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            plot(ax,t_s,mean(x_mu_s(xn(1),:,:),3),plot_opt{:})
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,mean(x_est_mu_s(xn(1),:,validKfId(i),:),4),plot_opt{:})
+            end
+        else
+            plot(ax,t_s,x_mu_s(xn(1),:,thn),plot_opt{:})
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,x_est_mu_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+            end
         end
         legend(ax,'Data',app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Amplitude ",yUnit));
     case 'Sensitivity'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,reshape(s_est_mu_s(xn(1),1,:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(mean(s_est_mu_s(xn(1),1,:,validKfId(i),:),5),1,numel(t_s)),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(s_est_mu_s(xn(1),1,:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Amplitude ",yUnit));
     case 'Norm (sensitivity)'
-        for i = 1:numel(validKfId)
-            s_tmp = reshape(s_est_mu_s(:,1,:,validKfId(i),thn),app.nx,numel(t_s));
-%             norm_s = sqrt(diag(s_tmp'*s_tmp));
-            norm_s = (diag(s_tmp'*s_tmp));
-            plot(ax,t_s,norm_s,plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                s_tmp = reshape(mean(s_est_mu_s(:,1,:,validKfId(i),:),5),app.nx,numel(t_s));
+                norm_s = (diag(s_tmp'*s_tmp));
+                plot(ax,t_s,norm_s,plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                s_tmp = reshape(s_est_mu_s(:,1,:,validKfId(i),thn),app.nx,numel(t_s));
+                norm_s = (diag(s_tmp'*s_tmp));
+                plot(ax,t_s,norm_s,plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Amplitude ",yUnit));
     case '2nd moment (state)'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,reshape(Px_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(mean(Px_mu_s(xn(1),xn(2),:,validKfId(i),:),5),1,numel(t_s)),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(Px_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Amplitude ",yUnit));
     case 'Trace 2nd moment (state)'
-        for i = 1:numel(validKfId)
-            trP = t_s*0;
-            for di = 1:app.nx
-                trP = trP + reshape(Px_mu_s(di,di,:,validKfId(i),thn),1,numel(t_s));
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                trP = t_s*0;
+                for di = 1:app.nx
+                    trP = trP + reshape(mean(Px_mu_s(di,di,:,validKfId(i),:),5),1,numel(t_s));
+                end
+                plot(ax,t_s,trP,plot_opt{:})
             end
-            plot(ax,t_s,trP,plot_opt{:})
+        else
+            for i = 1:numel(validKfId)
+                trP = t_s*0;
+                for di = 1:app.nx
+                    trP = trP + reshape(Px_mu_s(di,di,:,validKfId(i),thn),1,numel(t_s));
+                end
+                plot(ax,t_s,trP,plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Amplitude ",yUnit));
     case 'Trace 2nd moment (sensitivity)'
-        for i = 1:numel(validKfId)
-            trP = t_s*0;
-            for di = 1:app.nx
-                trP = trP + reshape(Ps_mu_s(di,di,:,validKfId(i),thn),1,numel(t_s));
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                trP = t_s*0;
+                for di = 1:app.nx
+                    trP = trP + reshape(mean(Ps_mu_s(di,di,:,validKfId(i),:),5),1,numel(t_s));
+                end
+                plot(ax,t_s,trP,plot_opt{:})
             end
-            plot(ax,t_s,trP,plot_opt{:})
+        else
+            for i = 1:numel(validKfId)
+                trP = t_s*0;
+                for di = 1:app.nx
+                    trP = trP + reshape(Ps_mu_s(di,di,:,validKfId(i),thn),1,numel(t_s));
+                end
+                plot(ax,t_s,trP,plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Amplitude ",yUnit));
     case '2nd moment (sensitivity)'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,reshape(Ps_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(mean(Ps_mu_s(xn(1),xn(2),:,validKfId(i),:),5),1,numel(t_s)),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(Ps_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Amplitude ",yUnit));
     case '2nd moment (cross)'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,reshape(Psx_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(mean(Psx_mu_s(xn(1),xn(2),:,validKfId(i),:),5),1,numel(t_s)),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(Psx_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Amplitude ",yUnit));
     case 'Gain (sensitivity)'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,reshape(Kth_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(mean(Kth_mu_s(xn(1),xn(2),:,validKfId(i),:),5),1,numel(t_s)),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(Kth_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Gain sensitivity ",yUnit));
     case 'Gain'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,reshape(Kx_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(mean(Kx_mu_s(xn(1),xn(2),:,validKfId(i),:),5),1,numel(t_s)),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,reshape(Kx_mu_s(xn(1),xn(2),:,validKfId(i),thn),1,numel(t_s)),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("Gain ",yUnit));
-    case 'MSE'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,mse_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+    case 'Instant RMSE'
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                 plot(ax,t_s,mean(irmse_s(xn(1),:,validKfId(i),:),4),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,irmse_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
-        ylabel(ax,strcat("MSE ",yUnit));
+        ylabel(ax,strcat("RMSE ",yUnit));
     case 'MAD'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,mad_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                 plot(ax,t_s,mean(mad_s(xn(1),:,validKfId(i),:),4),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,mad_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)
         ylabel(ax,strcat("MAD ",yUnit));
     case 'RMSE'
-        for i = 1:numel(validKfId)
-            plot(ax,t_s,rmse_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+        if thn < 0
+            % Mean over parameters
+            for i = 1:numel(validKfId)
+                 plot(ax,t_s,mean(rmse_s(xn(1),:,validKfId(i),:),4),plot_opt{:})
+            end
+        else
+            for i = 1:numel(validKfId)
+                plot(ax,t_s,rmse_s(xn(1),:,validKfId(i),thn),plot_opt{:})
+            end
         end
         legend(ax,app.KfTab.FullName{validKfId},leg_opt{:})
         xlabel(ax,tLabel)

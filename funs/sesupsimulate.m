@@ -1,6 +1,6 @@
-function [mse_est,rmse_est,mad_est,x_mu,x_est_mu,Kx_mu,Px_mu,Kth_mu,s_est_mu,Ps_mu,Psx_mu] = sesupsimulate(app)
+function [irmse_est,rmse_est,mad_est,x_mu,x_est_mu,Kx_mu,Px_mu,Kth_mu,s_est_mu,Ps_mu,Psx_mu] = sesupsimulate(app)
 
-mse_est  = app.mse_est;
+irmse_est  = app.irmse_est;
 rmse_est = app.rmse_est;
 mad_est  = app.mad_est;
 x_mu     = app.x_mu;
@@ -11,6 +11,8 @@ Kth_mu   = app.Kth_mu;
 Px_mu    = app.Px_mu;
 Ps_mu    = app.Ps_mu;
 Psx_mu   = app.Psx_mu;
+
+MaxGamma = app.XdkfMaxGamma;
 
 nt = numel(app.t);
 nthr = numel(app.ParReal);
@@ -29,6 +31,7 @@ ProgressDialog.Value = 0;
 % Local variables definitions due to parallel toolbox
 t = app.t;
 x0 = app.x0;
+x0_sim = app.x0_sim;
 th0 = app.th0;
 P0 = app.P0;
 y0 = app.y0;
@@ -44,7 +47,7 @@ Par = app.KfTab.Par;
 
 for thi = 1:numel(app.ParReal)
     
-    tmp_mse = mse_est(:,:,:,thi);
+    tmp_irmse = irmse_est(:,:,:,thi);
     tmp_rmse = rmse_est(:,:,:,thi);
     tmp_mad = mad_est(:,:,:,thi);
     tmp_x_mu = x_mu(:,:,thi);
@@ -73,9 +76,9 @@ for thi = 1:numel(app.ParReal)
     y_init = zeros(ny,1,nt);
     x_init = zeros(nx,1,nt);
     u_init = app.u;
-    x_init(:,:,1) = x0;
+    x_init(:,:,1) = x0_sim;
     for kfi = 1:nf
-        x_est_init(:,:,1,kfi) = x0+1;
+        x_est_init(:,:,1,kfi) = x0;
         P_est_init(:,:,1,kfi) = P0;
     end
     Pz_skf_init =  repmat(blkdiag(P_est_init(:,:,1,1),eye(nth)),1,1,nf);
@@ -88,6 +91,11 @@ for thi = 1:numel(app.ParReal)
     Psx_xdkf_init = repmat(eye(nx)*0,1,1,nth,nt,nf);
     s_est_init = zeros(nx,nth,nt,nf);
     Kth_xdkf_init = zeros(nx,ny,nth,nt,nf);
+    for kfi = 1:nf
+        for thp = 1:nth
+            Ps_xdkf_init(:,:,thp,1,kfi) = P0;
+        end
+    end
     
     tic
     parfor n = 1:app.ExpNum
@@ -112,7 +120,11 @@ for thi = 1:numel(app.ParReal)
             % Data generator
             y(:,:,k) = full(genmod('g',k,x(:,:,k),u(:,k),th_sim,chol(R)'*randn(ny,1)));
             if k<nt
-            x(:,:,k+1) = full(genmod('fd',k,x(:,:,k),u(:,k),th_sim,chol(Q)'*randn(nx,1)));
+                if trace(abs(Q))>0
+                    x(:,:,k+1) = full(genmod('fd',k,x(:,:,k),u(:,k),th_sim,chol(Q)'*randn(nx,1)));
+                else
+                    x(:,:,k+1) = full(genmod('fd',k,x(:,:,k),u(:,k),th_sim,zeros(nx,1)));
+                end
             end
             
             Tmpx = x_est(:,:,k,:);
@@ -148,15 +160,23 @@ for thi = 1:numel(app.ParReal)
                     case "XDKF-N"
                         % XDKF normalized
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
-                            = xdkfnstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                            = xdkfnstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar,MaxGamma);
                     case "XDKF-Z"
                         % XDKF-Z
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
                             = xdkf1step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                    case "EXDKF-Z"
+                        % EXDKF-Z
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
+                            = exdkf1step(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
                     case "XDKF-ZN"
                         % XDKF-Z normalized
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
-                            = xdkf1nstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar);
+                            = xdkf1nstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar,MaxGamma);
+                    case "EXDKF-ZN"
+                        % EXDKF-Z normalized
+                        [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
+                            = exdkf1nstep(Tmpx(:,:,1,kfi),th0,TmpPx(:,:,1,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),k,u(:,k),y(:,:,k),R,Q,KfPar,MaxGamma);
                     case "XDKF-I"
                         % XDKF-I
                         [Tmpx(:,:,1,kfi),TmpPx(:,:,1,kfi),Kx(:,:,k,kfi),Tmps(:,:,1,kfi),TmpPs(:,:,:,1,kfi),TmpPsx(:,:,:,1,kfi),Kth_xdkf(:,:,:,k,kfi)] ...
@@ -188,10 +208,10 @@ for thi = 1:numel(app.ParReal)
         x = reshape(x,nx,nt);
         x_est = reshape(x_est,nx,nt,nf);
         
-        % RMSE Sum
-        tmp_mse   = tmp_mse + cumsum((x-x_est).^2,2)./(t+1);        
-        % RMSE Sum
-        tmp_rmse  = tmp_rmse + sqrt(cumsum((x-x_est).^2,2)./(t+1));   
+        % Instant RMSE Sum
+        tmp_irmse   = tmp_irmse + sqrt((x-x_est).^2);        
+        % RMSE Cummulative Sum
+        tmp_rmse  = tmp_rmse + cumsum(sqrt((x-x_est).^2),2)./(t+1);   
         % MAD Sum
         mad_i = zeros(nx,nt,nf);
         for madi = 1:nt
@@ -211,7 +231,7 @@ for thi = 1:numel(app.ParReal)
     end
     
     % Mean in experiments
-    mse_est(:,:,:,thi)  = tmp_mse(:,:,:)/app.ExpNum;
+    irmse_est(:,:,:,thi)  = tmp_irmse(:,:,:)/app.ExpNum;
     rmse_est(:,:,:,thi) = tmp_rmse(:,:,:)/app.ExpNum;
     mad_est(:,:,:,thi)  = tmp_mad(:,:,:)/app.ExpNum;
     x_mu(:,:,thi)       = tmp_x_mu(:,:)/app.ExpNum;

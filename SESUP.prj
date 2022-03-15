@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="3986085537" file="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP.prj" location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup" name="SESUP" preferred-package-location="C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="450988782" file="C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup\SESUP.prj" location="C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup" name="SESUP" preferred-package-location="C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup\SESUP\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>SESUP</param.appname>
     <param.icon>${PROJECT_ROOT}\SESUP_resources\icon.ico</param.icon>
     <param.icons>
@@ -8,7 +8,7 @@
       <file>${PROJECT_ROOT}\SESUP_resources\icon_24.png</file>
       <file>${PROJECT_ROOT}\SESUP_resources\icon_16.png</file>
     </param.icons>
-    <param.version>1.0</param.version>
+    <param.version>1.4</param.version>
     <param.authnamewatermark>Jaroslav Tabacek</param.authnamewatermark>
     <param.email>tabacjar@fel.cvut.cz</param.email>
     <param.company>Czech Technical University in Prague</param.company>
@@ -16,7 +16,7 @@
     <param.description>Test performance of state estimation for systems with uncertain parameters (SESUP) using Monte carlo simulations.</param.description>
     <param.screenshot>${PROJECT_ROOT}\logo.jpg</param.screenshot>
     <param.guid />
-    <param.installpath.string>\SESUP\</param.installpath.string>
+    <param.installpath.string>\Czech Technical University in Prague\SESUP\</param.installpath.string>
     <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
     <param.logo>${PROJECT_ROOT}\logo.jpg</param.logo>
     <param.install.notes />
@@ -48,11 +48,8 @@
 	 -?  print help on how to use the application 
 	 input arguments</param.help.text>
     <unset>
-      <param.version />
-      <param.authnamewatermark />
-      <param.email />
-      <param.company />
       <param.guid />
+      <param.installpath.string />
       <param.installpath.combo />
       <param.install.notes />
       <param.target.install.notes />
@@ -77,7 +74,7 @@
       <file>${PROJECT_ROOT}\sesup.mlapp</file>
     </fileset.main>
     <fileset.resources>
-      <file>C:\Users\H172361\Documents\MATLAB\AdditionalToolboxes\casadi-v3.5.5</file>
+      <file>C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\AdditionalToolboxes\casadi-v3.5.5</file>
       <file>${PROJECT_ROOT}\data</file>
       <file>${PROJECT_ROOT}\filter</file>
       <file>${PROJECT_ROOT}\funs</file>
@@ -90,16 +87,19 @@
       <file>${PROJECT_ROOT}\sesupOptions.mlapp</file>
     </fileset.depfun>
     <build-deliverables>
-      <file location="${PROJECT_ROOT}\SESUP\for_testing" name="SESUP.exe" optional="false">C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP\for_testing\SESUP.exe</file>
-      <file location="${PROJECT_ROOT}\SESUP\for_testing" name="splash.png" optional="false">C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP\for_testing\splash.png</file>
-      <file location="${PROJECT_ROOT}\SESUP\for_testing" name="readme.txt" optional="true">C:\Users\H172361\Documents\MATLAB\JPRO\sesup\SESUP\for_testing\readme.txt</file>
+      <file location="${PROJECT_ROOT}\SESUP\for_testing" name="SESUP.exe" optional="false">C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup\SESUP\for_testing\SESUP.exe</file>
+      <file location="${PROJECT_ROOT}\SESUP\for_testing" name="splash.png" optional="false">C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup\SESUP\for_testing\splash.png</file>
+      <file location="${PROJECT_ROOT}\SESUP\for_testing" name="readme.txt" optional="true">C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup\SESUP\for_testing\readme.txt</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2019b</root>
+      <root>C:\Program Files\MATLAB\R2021a</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
         <toolbox name="embeddedcoder" />
+        <toolbox name="fixedpoint" />
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="neuralnetwork" />
       </toolboxes>
       <toolbox>
         <matlabcoder>
@@ -110,6 +110,21 @@
         <embeddedcoder>
           <enabled>true</enabled>
         </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <neuralnetwork>
+          <enabled>true</enabled>
+        </neuralnetwork>
       </toolbox>
     </matlab>
     <platform>

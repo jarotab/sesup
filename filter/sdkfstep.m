@@ -20,6 +20,8 @@ e = zeros(ny,1);
 A = full(genmod('dfddx',t,x0,u,th0,w));
 Ath = full(genmod('dfddth',t,x0,u,th0,w));
 C = full(genmod('dgdx',t,x0,u,th0,e));
+f = full(genmod('fd',t,x0,u,th0,w));
+g = full(genmod('g',t,x0,u,th0,e));
 
 Xi = A*S0 + Ath;
 Ga = C*S0;
@@ -27,7 +29,7 @@ Ga = C*S0;
 K = (A*P0*C' + Xi*W*Ga')/(C*P0*C' + R + Ga*W*Ga');
 
 S = Xi-K*Ga;
-x = full(genmod('fd',t,x0,u,th0,w)) + K*(y-C*x0);
+x = f + K*(y-g);
 P = (A-K*C)*P0*(A-K*C)' + Q + K*R*K';
 
 end

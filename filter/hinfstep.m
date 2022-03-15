@@ -18,6 +18,8 @@ y = reshape(y,ny,1);
 A = full(genmod('dfddx',t,x0,u,th0,w));
 C = full(genmod('dgdx',t,x0,u,th0,e));
 G = full(genmod('dfddw',t,x0,u,th0,w));
+f = full(genmod('fd',t,x0,u,th0,w));
+g = full(genmod('g',t,x0,u,th0,e));
 
 L = eye(nx);
 H = [C;L];
@@ -29,6 +31,6 @@ Pinv = inv(M0) - gamma^(-2)*(L'*L);
 
 K = A/Pinv*C'/(eye(ny)+C/Pinv*C');
 
-x = full(genmod('fd',t,x0,u,th0,w)) + K*(y-C*x0);
+x = f + K*(y-g);
 
 end

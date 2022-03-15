@@ -17,10 +17,12 @@ y = reshape(y,ny,1);
 
 A = full(genmod('dfddx',t,x0,u,th0,w));
 C = full(genmod('dgdx',t,x0,u,th0,e));
+f = full(genmod('fd',t,x0,u,th0,w));
+g = full(genmod('g',t,x0,u,th0,e));
 
 K = (A*P0*C')/(C*P0*C' + R);
 
-x = full(genmod('fd',t,x0,u,th0,w)) + K*(y-C*x0);
+x = f + K*(y-g);
 P = A*P0*A' + Q - K*C*P0*A';
 
 end

@@ -1,4 +1,4 @@
-function [x,Px,K,s,Ps,Psx,Kth] = xdkf1nstep(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma)
+function [x,Px,K,s,Ps,Psx,Kth] = xdkf1nstep(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,gamma,g_max)
 
 % XDKF-Z N
 % - with assumption of zero gain sensitivity 
@@ -31,7 +31,6 @@ C = full(genmod('dgdx',t,x0,u,th0,e));
 alpha = 1-sum(gamma);
 if trace(P0s) > 0
 % weight normalization
-g_max = 0.99;
 K_g0 = (A*P0x*C')/(C*P0x*C' + R);
 [~,~,K_gmax] = xdkf1step(x0,th0,P0x,s0,P0s,P0sx,t,u,y,R,Q,g_max);
 JxU = optimizationCriteria(K_g0,0,A,Ath_col,C,x0,th0,P0x,s0,P0s,P0sx,R,Q);
@@ -91,12 +90,10 @@ Px = (A-K*C)*P0x*(A-K*C)' + Q + K*R*K';
 Popt = (1-gamma)*Px;
 
 Ps = P0s;
-Psx = P0sx;
 for p = 1:nth
     Athp = reshape(Ath_col(:,p),nx,nx);
     P0sp  = P0s(:,:,p);    
     P0sxp = P0sx(:,:,p);
-    Psx(:,:,p) = (A-K*C)*P0sxp*(A-K*C)';
     Ps(:,:,p) = (A-K*C)*P0sp*(A-K*C)' + (Athp*x0)*(Athp*x0)'...
         - (A-K*C)*s0(:,p)*(Athp*x0)' - (Athp*x0)*s0(:,p)'*(A-K*C)';
     Popt = Popt + gamma(p)*Ps(:,:,p);

@@ -125,28 +125,30 @@ static const int CASADI_PREFIX(s2)[8] = {2, 2, 0, 1, 3, 0, 0, 1};
 #define s2 CASADI_PREFIX(s2)
 static const int CASADI_PREFIX(s3)[7] = {2, 2, 0, 1, 2, 0, 1};
 #define s3 CASADI_PREFIX(s3)
-static const int CASADI_PREFIX(s4)[5] = {2, 1, 0, 1, 0};
+static const int CASADI_PREFIX(s4)[5] = {2, 1, 0, 1, 1};
 #define s4 CASADI_PREFIX(s4)
-static const int CASADI_PREFIX(s5)[5] = {4, 1, 0, 1, 2};
+static const int CASADI_PREFIX(s5)[5] = {4, 1, 0, 1, 3};
 #define s5 CASADI_PREFIX(s5)
-static const int CASADI_PREFIX(s6)[7] = {1, 2, 0, 1, 2, 0, 0};
+static const int CASADI_PREFIX(s6)[6] = {1, 2, 0, 1, 1, 0};
 #define s6 CASADI_PREFIX(s6)
+static const int CASADI_PREFIX(s7)[4] = {1, 1, 0, 0};
+#define s7 CASADI_PREFIX(s7)
+static const int CASADI_PREFIX(s8)[4] = {2, 1, 0, 0};
+#define s8 CASADI_PREFIX(s8)
 /* fd */
 int fd(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
-  real_t a0=9.8019999999999996e-001;
+  real_t a0=9.0000000000000002e-001;
   real_t a1=arg[1] ? arg[1][0] : 0;
   a1=(a0*a1);
-  real_t a2=9.9000000000000005e-002;
-  real_t a3=arg[3] ? arg[3][0] : 0;
-  a2=(a2*a3);
-  a3=1.9599999999999999e-002;
-  a3=(a3+a2);
-  a2=arg[1] ? arg[1][1] : 0;
-  a3=(a3*a2);
-  a1=(a1+a3);
-  a3=arg[4] ? arg[4][0] : 0;
+  real_t a2=arg[1] ? arg[1][1] : 0;
+  a1=(a1*a2);
+  real_t a3=arg[4] ? arg[4][0] : 0;
   a1=(a1+a3);
   if (res[0]!=0) res[0][0]=a1;
+  a1=1.0000000000000001e-001;
+  a3=arg[3] ? arg[3][0] : 0;
+  a1=(a1*a3);
+  a0=(a0+a1);
   a0=(a0*a2);
   a2=arg[4] ? arg[4][1] : 0;
   a0=(a0+a2);
@@ -232,14 +234,17 @@ void mex_fd(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 
 /* dfddx */
 int dfddx(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
-  real_t a0=9.8019999999999996e-001;
-  if (res[0]!=0) res[0][0]=a0;
-  real_t a1=9.9000000000000005e-002;
+  real_t a0=9.0000000000000002e-001;
+  real_t a1=arg[1] ? arg[1][1] : 0;
+  a1=(a0*a1);
+  if (res[0]!=0) res[0][0]=a1;
+  a1=arg[1] ? arg[1][0] : 0;
+  a1=(a0*a1);
+  if (res[0]!=0) res[0][1]=a1;
+  a1=1.0000000000000001e-001;
   real_t a2=arg[3] ? arg[3][0] : 0;
   a1=(a1*a2);
-  a2=1.9599999999999999e-002;
-  a2=(a2+a1);
-  if (res[0]!=0) res[0][1]=a2;
+  a0=(a0+a1);
   if (res[0]!=0) res[0][2]=a0;
   return 0;
 }
@@ -406,7 +411,7 @@ void mex_dfddw(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 
 /* dfddth */
 int dfddth(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
-  real_t a0=9.9000000000000005e-002;
+  real_t a0=1.0000000000000001e-001;
   real_t a1=arg[1] ? arg[1][1] : 0;
   a0=(a0*a1);
   if (res[0]!=0) res[0][0]=a0;
@@ -491,7 +496,7 @@ void mex_dfddth(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 
 /* ddfddxdth */
 int ddfddxdth(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
-  real_t a0=9.9000000000000005e-002;
+  real_t a0=1.0000000000000001e-001;
   if (res[0]!=0) res[0][0]=a0;
   return 0;
 }
@@ -575,11 +580,12 @@ void mex_ddfddxdth(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 /* g */
 int g(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
   real_t a0=arg[1] ? arg[1][0] : 0;
-  real_t a1=arg[1] ? arg[1][1] : 0;
-  a0=(a0-a1);
-  a1=arg[4] ? arg[4][0] : 0;
-  a0=(a0+a1);
-  if (res[0]!=0) res[0][0]=a0;
+  a0=sq(a0);
+  real_t a1=2.0000000000000001e-001;
+  a1=(a1*a0);
+  a0=arg[4] ? arg[4][0] : 0;
+  a1=(a1+a0);
+  if (res[0]!=0) res[0][0]=a1;
   return 0;
 }
 
@@ -661,10 +667,11 @@ void mex_g(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
 
 /* dgdx */
 int dgdx(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
-  real_t a0=1.;
-  if (res[0]!=0) res[0][0]=a0;
-  a0=-1.;
-  if (res[0]!=0) res[0][1]=a0;
+  real_t a0=arg[1] ? arg[1][0] : 0;
+  a0=(a0+a0);
+  real_t a1=2.0000000000000001e-001;
+  a1=(a1*a0);
+  if (res[0]!=0) res[0][0]=a1;
   return 0;
 }
 
@@ -718,7 +725,7 @@ int dgdx_work(int *sz_arg, int* sz_res, int *sz_iw, int *sz_w) {
   if (sz_arg) *sz_arg = 5;
   if (sz_res) *sz_res = 1;
   if (sz_iw) *sz_iw = 0;
-  if (sz_w) *sz_w = 1;
+  if (sz_w) *sz_w = 2;
   return 0;
 }
 
@@ -728,19 +735,264 @@ void mex_dgdx(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
   if (argc>5) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgdx\" failed. Too many input arguments (%d, max 5)", argc);
   if (resc>1) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgdx\" failed. Too many output arguments (%d, max 1)", resc);
   int *iw = 0;
-  real_t w[10];
+  real_t w[9];
   const real_t* arg[5] = {0};
-  if (--argc>=0) arg[0] = from_mex(argv[0], w, s0, w+8);
-  if (--argc>=0) arg[1] = from_mex(argv[1], w+1, s1, w+8);
-  if (--argc>=0) arg[2] = from_mex(argv[2], w+3, s0, w+8);
-  if (--argc>=0) arg[3] = from_mex(argv[3], w+4, s0, w+8);
-  if (--argc>=0) arg[4] = from_mex(argv[4], w+5, s0, w+8);
+  if (--argc>=0) arg[0] = from_mex(argv[0], w, s0, w+7);
+  if (--argc>=0) arg[1] = from_mex(argv[1], w+1, s1, w+7);
+  if (--argc>=0) arg[2] = from_mex(argv[2], w+3, s0, w+7);
+  if (--argc>=0) arg[3] = from_mex(argv[3], w+4, s0, w+7);
+  if (--argc>=0) arg[4] = from_mex(argv[4], w+5, s0, w+7);
   real_t* res[1] = {0};
   --resc;
   res[0] = w+6;
-  i = dgdx(arg, res, iw, w+8, 0);
+  i = dgdx(arg, res, iw, w+7, 0);
   if (i) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgdx\" failed.");
   if (res[0]) resv[0] = to_mex(s6, res[0]);
+}
+#endif
+
+/* dgde */
+int dgde(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
+  real_t a0=1.;
+  if (res[0]!=0) res[0][0]=a0;
+  return 0;
+}
+
+void dgde_incref(void) {
+}
+
+void dgde_decref(void) {
+}
+
+int dgde_n_in(void) { return 5;}
+
+int dgde_n_out(void) { return 1;}
+
+const char* dgde_name_in(int i){
+  switch (i) {
+  case 0: return "t";
+  case 1: return "x";
+  case 2: return "u";
+  case 3: return "th";
+  case 4: return "e";
+  default: return 0;
+  }
+}
+
+const char* dgde_name_out(int i){
+  switch (i) {
+  case 0: return "dgde";
+  default: return 0;
+  }
+}
+
+const int* dgde_sparsity_in(int i) {
+  switch (i) {
+  case 0: return s0;
+  case 1: return s1;
+  case 2: return s0;
+  case 3: return s0;
+  case 4: return s0;
+  default: return 0;
+  }
+}
+
+const int* dgde_sparsity_out(int i) {
+  switch (i) {
+  case 0: return s0;
+  default: return 0;
+  }
+}
+
+int dgde_work(int *sz_arg, int* sz_res, int *sz_iw, int *sz_w) {
+  if (sz_arg) *sz_arg = 5;
+  if (sz_res) *sz_res = 1;
+  if (sz_iw) *sz_iw = 0;
+  if (sz_w) *sz_w = 1;
+  return 0;
+}
+
+#ifdef MATLAB_MEX_FILE
+void mex_dgde(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
+  int i, j;
+  if (argc>5) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgde\" failed. Too many input arguments (%d, max 5)", argc);
+  if (resc>1) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgde\" failed. Too many output arguments (%d, max 1)", resc);
+  int *iw = 0;
+  real_t w[9];
+  const real_t* arg[5] = {0};
+  if (--argc>=0) arg[0] = from_mex(argv[0], w, s0, w+7);
+  if (--argc>=0) arg[1] = from_mex(argv[1], w+1, s1, w+7);
+  if (--argc>=0) arg[2] = from_mex(argv[2], w+3, s0, w+7);
+  if (--argc>=0) arg[3] = from_mex(argv[3], w+4, s0, w+7);
+  if (--argc>=0) arg[4] = from_mex(argv[4], w+5, s0, w+7);
+  real_t* res[1] = {0};
+  --resc;
+  res[0] = w+6;
+  i = dgde(arg, res, iw, w+7, 0);
+  if (i) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgde\" failed.");
+  if (res[0]) resv[0] = to_mex(s0, res[0]);
+}
+#endif
+
+/* dgdth */
+int dgdth(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
+  return 0;
+}
+
+void dgdth_incref(void) {
+}
+
+void dgdth_decref(void) {
+}
+
+int dgdth_n_in(void) { return 5;}
+
+int dgdth_n_out(void) { return 1;}
+
+const char* dgdth_name_in(int i){
+  switch (i) {
+  case 0: return "t";
+  case 1: return "x";
+  case 2: return "u";
+  case 3: return "th";
+  case 4: return "e";
+  default: return 0;
+  }
+}
+
+const char* dgdth_name_out(int i){
+  switch (i) {
+  case 0: return "dgdth";
+  default: return 0;
+  }
+}
+
+const int* dgdth_sparsity_in(int i) {
+  switch (i) {
+  case 0: return s0;
+  case 1: return s1;
+  case 2: return s0;
+  case 3: return s0;
+  case 4: return s0;
+  default: return 0;
+  }
+}
+
+const int* dgdth_sparsity_out(int i) {
+  switch (i) {
+  case 0: return s7;
+  default: return 0;
+  }
+}
+
+int dgdth_work(int *sz_arg, int* sz_res, int *sz_iw, int *sz_w) {
+  if (sz_arg) *sz_arg = 5;
+  if (sz_res) *sz_res = 1;
+  if (sz_iw) *sz_iw = 0;
+  if (sz_w) *sz_w = 0;
+  return 0;
+}
+
+#ifdef MATLAB_MEX_FILE
+void mex_dgdth(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
+  int i, j;
+  if (argc>5) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgdth\" failed. Too many input arguments (%d, max 5)", argc);
+  if (resc>1) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgdth\" failed. Too many output arguments (%d, max 1)", resc);
+  int *iw = 0;
+  real_t w[8];
+  const real_t* arg[5] = {0};
+  if (--argc>=0) arg[0] = from_mex(argv[0], w, s0, w+6);
+  if (--argc>=0) arg[1] = from_mex(argv[1], w+1, s1, w+6);
+  if (--argc>=0) arg[2] = from_mex(argv[2], w+3, s0, w+6);
+  if (--argc>=0) arg[3] = from_mex(argv[3], w+4, s0, w+6);
+  if (--argc>=0) arg[4] = from_mex(argv[4], w+5, s0, w+6);
+  real_t* res[1] = {0};
+  --resc;
+  res[0] = w+6;
+  i = dgdth(arg, res, iw, w+6, 0);
+  if (i) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"dgdth\" failed.");
+  if (res[0]) resv[0] = to_mex(s7, res[0]);
+}
+#endif
+
+/* ddgdxdth */
+int ddgdxdth(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {
+  return 0;
+}
+
+void ddgdxdth_incref(void) {
+}
+
+void ddgdxdth_decref(void) {
+}
+
+int ddgdxdth_n_in(void) { return 5;}
+
+int ddgdxdth_n_out(void) { return 1;}
+
+const char* ddgdxdth_name_in(int i){
+  switch (i) {
+  case 0: return "t";
+  case 1: return "x";
+  case 2: return "u";
+  case 3: return "th";
+  case 4: return "e";
+  default: return 0;
+  }
+}
+
+const char* ddgdxdth_name_out(int i){
+  switch (i) {
+  case 0: return "ddgdxdth";
+  default: return 0;
+  }
+}
+
+const int* ddgdxdth_sparsity_in(int i) {
+  switch (i) {
+  case 0: return s0;
+  case 1: return s1;
+  case 2: return s0;
+  case 3: return s0;
+  case 4: return s0;
+  default: return 0;
+  }
+}
+
+const int* ddgdxdth_sparsity_out(int i) {
+  switch (i) {
+  case 0: return s8;
+  default: return 0;
+  }
+}
+
+int ddgdxdth_work(int *sz_arg, int* sz_res, int *sz_iw, int *sz_w) {
+  if (sz_arg) *sz_arg = 5;
+  if (sz_res) *sz_res = 1;
+  if (sz_iw) *sz_iw = 0;
+  if (sz_w) *sz_w = 0;
+  return 0;
+}
+
+#ifdef MATLAB_MEX_FILE
+void mex_ddgdxdth(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
+  int i, j;
+  if (argc>5) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"ddgdxdth\" failed. Too many input arguments (%d, max 5)", argc);
+  if (resc>1) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"ddgdxdth\" failed. Too many output arguments (%d, max 1)", resc);
+  int *iw = 0;
+  real_t w[8];
+  const real_t* arg[5] = {0};
+  if (--argc>=0) arg[0] = from_mex(argv[0], w, s0, w+6);
+  if (--argc>=0) arg[1] = from_mex(argv[1], w+1, s1, w+6);
+  if (--argc>=0) arg[2] = from_mex(argv[2], w+3, s0, w+6);
+  if (--argc>=0) arg[3] = from_mex(argv[3], w+4, s0, w+6);
+  if (--argc>=0) arg[4] = from_mex(argv[4], w+5, s0, w+6);
+  real_t* res[1] = {0};
+  --resc;
+  res[0] = w+6;
+  i = ddgdxdth(arg, res, iw, w+6, 0);
+  if (i) mexErrMsgIdAndTxt("Casadi:RuntimeError","Evaluation of \"ddgdxdth\" failed.");
+  if (res[0]) resv[0] = to_mex(s8, res[0]);
 }
 #endif
 
@@ -765,8 +1017,14 @@ void mexFunction(int resc, mxArray *resv[], int argc, const mxArray *argv[]) {
     return mex_g(resc, resv, argc, argv);
   } else if (strcmp(buf, "dgdx")==0) {
     return mex_dgdx(resc, resv, argc, argv);
+  } else if (strcmp(buf, "dgde")==0) {
+    return mex_dgde(resc, resv, argc, argv);
+  } else if (strcmp(buf, "dgdth")==0) {
+    return mex_dgdth(resc, resv, argc, argv);
+  } else if (strcmp(buf, "ddgdxdth")==0) {
+    return mex_ddgdxdth(resc, resv, argc, argv);
   }
-  mexErrMsgTxt("First input should be a command string. Possible values: 'fd' 'dfddx' 'dfddw' 'dfddth' 'ddfddxdth' 'g' 'dgdx'");
+  mexErrMsgTxt("First input should be a command string. Possible values: 'fd' 'dfddx' 'dfddw' 'dfddth' 'ddfddxdth' 'g' 'dgdx' 'dgde' 'dgdth' 'ddgdxdth'");
 }
 #endif
 #ifdef __cplusplus

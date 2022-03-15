@@ -21,12 +21,13 @@ Qz = blkdiag(Q, zeros(nth));
 % Data step
 
 Cx = full(genmod('dgdx',t,x0,u,th0,e));
+g = full(genmod('g',t,x0,u,th0,e));
 
 C = [Cx,zeros(ny,nth)];
 
 K = (P0*C')/(C*P0*C' + R);
 
-z = z0 + K*(y-C*z0);
+z = z0 + K*(y-g);
 P = P0 - K*C*P0;
 
 z(nx+1:end,1) = th0;
