@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2001518698" file="C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="981457558" file="C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup\SESUP Testing.prj" location="C:\Users\tabacjar\OneDrive - České vysoké učení technické v Praze\MATLAB\JPRO\sesup" name="SESUP Testing" target="target.mlapps" target-name="Package App">
     <param.appname>SESUP Testing</param.appname>
     <param.authnamewatermark>Jaroslav Tabacek</param.authnamewatermark>
     <param.email>jaroslav.tabacek@cvut.cz</param.email>
@@ -23,7 +23,7 @@ Requirements for running simulations
 Created with MATLAB R2021a and Casadi v3.5.5.
 App might not work correctly for later versions of MATLAB due to regular behaviour changes in MATLAB App Designer.</param.description>
     <param.screenshot>${PROJECT_ROOT}\screenshot.png</param.screenshot>
-    <param.version>1.4</param.version>
+    <param.version>1.5</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Parallel Computing Toolbox</item>

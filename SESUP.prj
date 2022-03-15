@@ -8,7 +8,7 @@
       <file>${PROJECT_ROOT}\SESUP_resources\icon_24.png</file>
       <file>${PROJECT_ROOT}\SESUP_resources\icon_16.png</file>
     </param.icons>
-    <param.version>1.4</param.version>
+    <param.version>1.5</param.version>
     <param.authnamewatermark>Jaroslav Tabacek</param.authnamewatermark>
     <param.email>tabacjar@fel.cvut.cz</param.email>
     <param.company>Czech Technical University in Prague</param.company>
